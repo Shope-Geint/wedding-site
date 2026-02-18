@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    
+    <title>Константин & Елена</title>
+    <meta name="description" content="Приглашают вас на свадьбу 28 июня 2026">
+    
+    <!-- Шрифты -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Иконки -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+
+    <!-- Основные стили -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Главный баннер -->
+    <header class="hero" id="home">
+        <div class="hero-content">
+            <p class="hero-invitation">Приглашение на свадьбу</p>
+            <!-- ИМЕНА В 3 СТРОКИ -->
+            <div class="hero-names">
+                <h1 class="hero-name">Константин</h1>
+                <div class="hero-and">&</div>
+                <h1 class="hero-name">Елена</h1>
+            </div>
+            <div class="hero-date">28 июня 2026</div>
+            
+            <!-- Таймер обратного отсчета -->
+            <p class="hero-invitation">До заветной даты осталось...</p>
+            <div class="countdown" id="countdown">
+                <div class="countdown-item">
+                    <span class="countdown-number" id="days">000</span>
+                    <span class="countdown-label">дней</span>
+                </div>
+                <div class="countdown-item">
+                    <span class="countdown-number" id="hours">00</span>
+                    <span class="countdown-label">часов</span>
+                </div>
+                <div class="countdown-item">
+                    <span class="countdown-number" id="minutes">00</span>
+                    <span class="countdown-label">минут</span>
+                </div>
+                <div class="countdown-item">
+                    <span class="countdown-number" id="seconds">00</span>
+                    <span class="countdown-label">секунд</span>
+                </div>
+            </div>
+            
+            <!-- СТРЕЛКА ВНИЗ -->
+            <div class="scroll-arrow">
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </div>
+    </header>
+
+       <!-- Навигация -->
+    <nav class="main-nav" id="mainNav">
+        <div class="nav-container">
+            <a href="#home" class="nav-logo">К & Е</a>
+            <ul class="nav-menu">
+                <li><a href="#home">Главная</a></li>
+                <li><a href="#location">Локация</a></li>
+                <li><a href="#program">Программа</a></li>
+                <li><a href="#dresscode">Дресс-код</a></li>
+                <li><a href="#preferences">Наши предпочтения</a></li>
+                <li><a href="#rsvp">Подтвердить</a></li>
+            </ul>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+           <!-- Локация -->
+    <section class="section location-section" id="location">
+        <div class="container">
+            <h2 class="section-title">Локация</h2>
+            
+            <!-- Основная информация -->
+            <div class="location-header">
+                <div class="location-main-info">
+                    <h3 class="location-name">Осетровая ферма «ДоброFish»</h3>
+                    
+                    <div class="location-details-grid">
+                        <div class="location-detail">
+                            <div class="detail-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <div class="detail-content">
+                                <h4 class="detail-title">Адрес</h4>
+                                <p class="detail-value">г. Добрянка, Тюсевская улица, 4а</p>
+                            </div>
+                        </div>
+                        
+                        <div class="location-detail">
+                            <div class="detail-icon">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <div class="detail-content">
+                                <h4 class="detail-title">Дата и время</h4>
+                                <p class="detail-value">28 июня 2026, 16:30</p>
+                            </div>
+                        </div>
+                        
+                        <div class="location-detail">
+                            <div class="detail-icon">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                            <div class="detail-content">
+                                <h4 class="detail-title">Особенности</h4>
+                                <p class="detail-value">Уникальная осетровая ферма с живописным видом</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Как добраться + кнопка + карта -->
+            <div class="location-footer">
+                <!-- Левая колонка: транспортная информация -->
+                <div class="transport-section">
+                    <h4 class="transport-title">Как добраться</h4>
+                    
+                    <div class="transport-options">
+                        <div class="transport-option">
+                            <i class="fas fa-car"></i>
+                            <div class="transport-text">
+                                <strong>На автомобиле</strong>
+                                <p>Парковка на территории фермы</p>
+                            </div>
+                        </div>
+                        <div class="transport-option">
+                            <i class="fas fa-taxi"></i>
+                            <div class="transport-text">
+                                <strong>Такси</strong>
+                                <p>Из центра Добрянки ~15 минут</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Кнопка в левой колонке -->
+                    <div class="route-button-container">
+                        <a href="https://yandex.ru/maps/?text=Осетровая+ферма+ДоброFish+Добрянка+Тюсевская+улица+4а" 
+                        target="_blank" 
+                        class="route-button">
+                            <i class="fas fa-directions"></i>
+                            Построить маршрут
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Правая колонка: карта -->
+                <div class="location-map-container">
+                    <a href="https://yandex.ru/maps/?text=Осетровая+ферма+ДоброFish+Добрянка+Тюсевская+улица+4а" 
+                    target="_blank"
+                    class="static-map-link">
+                        <img src="https://static-maps.yandex.ru/1.x/?ll=56.3627,58.4839&z=12&l=map&size=650,400&pt=56.3627,58.4839,pm2rdm" 
+                            alt="Карта Осетровой фермы ДоброFish"
+                            class="static-map-image">
+                        <div class="map-overlay">
+                            <i class="fas fa-external-link-alt"></i>
+                            <span>Открыть в Яндекс.Картах</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Программа дня -->
+    <section class="section program-section" id="program">
+        <div class="parallax-lines">
+            <div class="line line-1"></div>
+            <div class="line line-2"></div>
+            <div class="line line-3"></div>
+            <div class="line line-4"></div>
+            <div class="line line-5"></div>
+            <div class="line line-11"></div>
+            <div class="line line-12"></div>
+            <div class="line line-13"></div>
+            <div class="line line-14"></div>
+            <div class="line line-15"></div>
+            <div class="line line-16"></div>
+            <div class="line line-17"></div>
+            <div class="line line-18"></div>
+            <div class="line line-19"></div>
+            <div class="line line-20"></div>
+        </div>
+        <div class="container">
+            <h2 class="section-title">Программа дня</h2>
+            
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-time">16:30</div>
+                    <div class="timeline-content">
+                        <h3 class="timeline-event">Сбор гостей</h3>
+                        <p class="timeline-description">Встреча гостей, welcome-фуршет</p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-time">17:00</div>
+                    <div class="timeline-content">
+                        <h3 class="timeline-event">Церемония бракосочетания</h3>
+                        <p class="timeline-description">Торжественная церемония</p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-time">18:00</div>
+                    <div class="timeline-content">
+                        <h3 class="timeline-event">Банкет</h3>
+                        <p class="timeline-description">Торжественный ужин</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+        <!-- Дресс-код -->
+    <section class="section dresscode-section" id="dresscode">
+        <div class="container">
+            <h2 class="section-title">Дресс-код</h2>
+            
+            <div class="dresscode-intro">
+                <p>Мы очень ждём и готовимся к нашему незабываемому дню! </p>
+                <p>Поддержите нас Вашими улыбками и объятиями, а также красивыми нарядами в палитре мероприятия </p>
+            </div>
+            
+            <!-- Цветовая палитра -->
+            <div class="color-palette">
+                <div class="color-item">
+                    <div class="color-swatch" style="background-color: #000000;"></div>
+                    <div class="color-info">
+                        <span class="color-name">Чёрный</span>
+                    </div>
+                </div>
+                
+                <div class="color-item">
+                    <div class="color-swatch" style="background-color: #59371C;"></div>
+                    <div class="color-info">
+                        <span class="color-name">Тёмный шоколад</span>
+                    </div>
+                </div>
+                
+                <div class="color-item">
+                    <div class="color-swatch" style="background-color: #8C6F51;"></div>
+                    <div class="color-info">
+                        <span class="color-name">Кофейный</span>
+                    </div>
+                </div>
+                
+                <div class="color-item">
+                    <div class="color-swatch" style="background-color: #AC9A86;"></div>
+                    <div class="color-info">
+                        <span class="color-name">Песочный</span>
+                    </div>
+                </div>
+                
+                <div class="color-item">
+                    <div class="color-swatch" style="background-color: #D7D1C5;"></div>
+                    <div class="color-info">
+                        <span class="color-name">Слоновая кость</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+<!-- Наши предпочтения -->
+<section class="section preferences-section" id="preferences">
+    <div class="parallax-lines">
+        <div class="line line-6"></div>
+        <div class="line line-7"></div>
+        <div class="line line-8"></div>
+        <div class="line line-9"></div>
+        <div class="line line-10"></div>
+        <div class="line line-21"></div>
+        <div class="line line-22"></div>
+        <div class="line line-23"></div>
+        <div class="line line-24"></div>
+        <div class="line line-25"></div>
+        <div class="line line-26"></div>
+        <div class="line line-27"></div>
+        <div class="line line-28"></div>
+        <div class="line line-29"></div>
+        <div class="line line-30"></div>
+    </div>
+    <div class="container">
+        <h2 class="section-title">Наши предпочтения</h2>
+        
+        <div class="preferences-content">
+            <!-- Карточка 1: Против "Горько" -->
+            <div class="preference-card">
+                <div class="preference-icon">
+                    <i class="fas fa-heart-broken"></i>
+                </div>
+                <div class="preference-text">
+                    <h3 class="preference-title">Без традиции «Горько!»</h3>
+                    <p class="preference-description">
+                        Мы решили отказаться от этой традиции, так как хотим, чтобы наши поцелуи 
+                        были искренними и желанными, а не по требованию гостей. 
+                        Поверьте, мы и так будем целоваться достаточно!
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Карточка 2: Подарки -->
+            <div class="preference-card">
+                <div class="preference-icon">
+                    <i class="fas fa-gift"></i>
+                </div>
+                <div class="preference-text">
+                    <h3 class="preference-title">О подарках</h3>
+                    <p class="preference-description">
+                        Ваше присутствие на нашей свадьбе — уже бесценный подарок для нас!
+                        
+                        <br><br>Если вы хотите нас порадовать, мы будем благодарны за финансовый вклад 
+                        в наше будущее (конверт или перевод на карту).
+                        
+                        <br><br>Мы очень любим цветы, но после свадьбы не сможем насладиться их красотой, 
+                        поэтому просим воздержаться от цветочных композиций.
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Карточка 3: Важное -->
+            <div class="preference-card">
+                <div class="preference-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="preference-text">
+                    <h3 class="preference-title">Самое важное</h3>
+                    <p class="preference-description">
+                        Главное для нас — видеть ваши улыбки и чувствовать вашу поддержку 
+                        в этот особенный день. Приходите с хорошим настроением, готовые 
+                        разделить с нами радость нашего союза!
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="preferences-note">
+            <p>Спасибо за понимание и уважение к нашим пожеланиям!</p>
+        </div>
+    </div>
+</section>
+
+    <!-- Форма подтверждения -->
+    <section class="section rsvp-section" id="rsvp">
+        <div class="container">
+            <h2 class="section-title">Подтвердите участие</h2>
+            <!-- ФРАЗА ПО ЦЕНТРУ -->
+            <p class="section-subtitle">Пожалуйста, ответьте до 1 марта 2026 года</p>
+            
+            <form class="rsvp-form" id="weddingForm">
+                <div class="form-group">
+                    <label for="name" class="form-label">Имя и фамилия *</label>
+                    <input type="text" id="name" name="name" class="form-input" required placeholder="Иван Иванов">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Вы придёте? *</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="attendance" value="yes" required>
+                            <span class="radio-custom"></span>
+                            <span class="radio-text">Да, с радостью!</span>
+                        </label>
+                        
+                        <label class="radio-option">
+                            <input type="radio" name="attendance" value="no">
+                            <span class="radio-custom"></span>
+                            <span class="radio-text">К сожалению, не смогу</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Какие напитки предпочитаете?</label>
+                    <div class="drinks-group">
+                        <div class="drink-options-grid">
+                            <label class="drink-option">
+                                <input type="checkbox" name="drinks[]" value="wine">
+                                <span class="drink-label">Вино</span>
+                            </label>
+                            <label class="drink-option">
+                                <input type="checkbox" name="drinks[]" value="champagne">
+                                <span class="drink-label">Шампанское</span>
+                            </label>
+                            <label class="drink-option">
+                                <input type="checkbox" name="drinks[]" value="whiskey">
+                                <span class="drink-label">Виски</span>
+                            </label>
+                            <label class="drink-option">
+                                <input type="checkbox" name="drinks[]" value="vodka">
+                                <span class="drink-label">Водка</span>
+                            </label>
+                            <label class="drink-option">
+                                <input type="checkbox" name="drinks[]" value="juice">
+                                <span class="drink-label">Сок</span>
+                            </label>
+                            <label class="drink-option">
+                                <input type="checkbox" name="drinks[]" value="water">
+                                <span class="drink-label">Вода</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="submit-button">
+                    Отправить ответ
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Футер -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <h2 class="footer-logo">Константин & Елена</h2>
+                <p class="footer-date">28 июня 2026</p>
+            </div>
+            <div class="footer-bottom">
+                <p>С любовью и благодарностью за ваше присутствие</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Кнопка "Наверх" -->
+    <button class="scroll-top" id="scrollTop">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>

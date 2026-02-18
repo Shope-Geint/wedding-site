@@ -174,7 +174,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 `;
                 
                 // URL вашего Worker (ЗАМЕНИТЕ НА СВОЙ!)
-                const WORKER_URL = 'https://wedding-form-proxy.lohnes98.workers.dev/';
+                const WORKER_URL = 'https://wedding-form-proxy.lohnes98.workers.dev';
 
                 // Отправляем в Worker
                 const response = await fetch(WORKER_URL, {

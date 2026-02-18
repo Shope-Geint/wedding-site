@@ -168,7 +168,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 `;
                 
                 // ===== ОТПРАВКА ЧЕРЕЗ WORKER =====
-                const WORKER_URL = 'https://wedding-form-proxy.lohnes98.workers.dev';
+                const WORKER_URL = 'https://wedding-form-telegram.lohnes98.workers.dev';
                 
                 const response = await fetch(WORKER_URL, {
                     method: 'POST',

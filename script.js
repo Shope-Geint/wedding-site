@@ -5,14 +5,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const CONFIG = {
         // Дата свадьбы Константина и Елены (год, месяц-1, день, час, минута)
         WEDDING_DATE: new Date(2026, 5, 28, 16, 0), // 28 июня 2026, 16:00
-        FORM_SUBMIT_URL: 'https://formspree.io/f/ваш-form-id',
     };
     
     // ===== ИНИЦИАЛИЗАЦИЯ =====
     init();
     
     function init() {
-        // Инициализация всех модулей
         initCountdown();
         initNavigation();
         initForm();
@@ -26,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Свадебный сайт Константина и Елены инициализирован! 🎉');
     }
     
-    // ===== ТАЙМЕР ОБРАТНОГО ОТСЧЕТА =====
+    // ===== ТАЙМЕР =====
     function initCountdown() {
         const daysElement = document.getElementById('days');
         const hoursElement = document.getElementById('hours');
@@ -67,13 +65,11 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (!navToggle || !navMenu) return;
         
-        // Мобильное меню
         navToggle.addEventListener('click', function() {
             navMenu.classList.toggle('active');
             this.classList.toggle('active');
         });
         
-        // Закрытие меню при клике на ссылку
         document.querySelectorAll('.nav-menu a').forEach(link => {
             link.addEventListener('click', () => {
                 navMenu.classList.remove('active');
@@ -81,7 +77,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
         
-        // Прокрутка с плавным скроллом
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -100,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // ===== ФОРМА ПОДТВЕРЖДЕНИЯ =====
+    // ===== ФОРМА (РАБОЧАЯ ВЕРСИЯ) =====
     function initForm() {
         const form = document.getElementById('weddingForm');
         if (!form) return;
@@ -119,14 +114,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 const nameInput = document.getElementById('name');
                 const name = nameInput.value.trim();
                 
-                // Проверяем имя через функцию валидации
+                // Проверяем имя
                 if (!validateNameInput(nameInput)) {
                     submitBtn.innerHTML = originalText;
                     submitBtn.disabled = false;
                     return;
                 }
                 
-                // Получаем выбранный вариант участия
+                // Получаем участие
                 const attendanceInput = document.querySelector('input[name="attendance"]:checked');
                 if (!attendanceInput) {
                     alert('Пожалуйста, выберите, сможете ли вы присутствовать');
@@ -135,18 +130,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
                 
-                // Преобразуем значения в читаемый текст
+                // Преобразуем значения
                 let attendanceText = '';
                 if (attendanceInput.value === 'yes') {
                     attendanceText = '✅ Да, с радостью!';
-                } else if (attendanceInput.value === 'no') {
+                } else {
                     attendanceText = '❌ К сожалению, не смогу';
                 }
                 
-                // Получаем выбранные напитки
+                // Получаем напитки
                 const selectedDrinks = [];
                 document.querySelectorAll('input[name="drinks[]"]:checked').forEach(checkbox => {
-                    // Преобразуем значения в читаемый текст
                     const drinkValue = checkbox.value;
                     if (drinkValue === 'wine') selectedDrinks.push('🍷 Вино');
                     else if (drinkValue === 'champagne') selectedDrinks.push('🥂 Шампанское');
@@ -158,57 +152,51 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 const drinksText = selectedDrinks.length > 0 ? selectedDrinks.join(', ') : 'Не выбраны';
                 
-                // Формируем сообщение для Telegram
+                // Формируем сообщение
                 const message = `
-                🎉 <b>НОВЫЙ ОТВЕТ НА СВАДЬБУ!</b>
-                ━━━━━━━━━━━━━━━━
+🎉 <b>НОВЫЙ ОТВЕТ НА СВАДЬБУ!</b>
+━━━━━━━━━━━━━━━━
 
-                👤 <b>Имя:</b> ${name}
+👤 <b>Имя:</b> ${name}
 
-                📌 <b>Участие:</b> ${attendanceText}
+📌 <b>Участие:</b> ${attendanceText}
 
-                🍷 <b>Напитки:</b> ${drinksText}
+🍷 <b>Напитки:</b> ${drinksText}
 
-                ━━━━━━━━━━━━━━━━
-                📅 <b>28 июня 2026</b> | Константин & Елена
+━━━━━━━━━━━━━━━━
+📅 <b>28 июня 2026</b> | Константин & Елена
                 `;
                 
-                // URL вашего Worker (ЗАМЕНИТЕ НА СВОЙ!)
+                // ===== ОТПРАВКА ЧЕРЕЗ WORKER =====
                 const WORKER_URL = 'https://wedding-form-proxy.lohnes98.workers.dev';
-
-                // Отправляем в Worker
+                
                 const response = await fetch(WORKER_URL, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ message: message })
                 });
                 
                 const result = await response.json();
+                // =================================
                 
                 if (result.ok) {
-                    alert('Спасибо! Ваш ответ успешно отправлен! Мы скоро подтвердим ваше участие ❤️');
-                    
-                    // Сбрасываем форму
+                    alert('Спасибо! Ваш ответ успешно отправлен! ❤️');
                     form.reset();
-                    
-                    // Очищаем ошибки валидации, если были
                     clearInputError(nameInput);
                 } else {
-                    throw new Error('Ошибка отправки в Telegram');
+                    throw new Error('Ошибка отправки');
                 }
                 
             } catch (error) {
-                console.error('Ошибка отправки:', error);
-                alert('Извините, произошла ошибка. Пожалуйста, попробуйте еще раз или свяжитесь с нами лично.');
+                console.error('Ошибка:', error);
+                alert('Извините, произошла ошибка. Попробуйте еще раз или напишите нам лично.');
             } finally {
                 submitBtn.innerHTML = originalText;
                 submitBtn.disabled = false;
             }
         });
         
-        // Валидация для имени
+        // Валидация имени
         const nameInput = document.getElementById('name');
         if (nameInput) {
             nameInput.addEventListener('blur', function() {
@@ -217,26 +205,24 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Функция валидации имени
+    // ===== ВАЛИДАЦИЯ =====
     function validateNameInput(input) {
         const value = input.value.trim();
         
         if (value === '') {
-            showInputError(input, 'Пожалуйста, введите имя и фамилию');
+            showInputError(input, 'Введите имя и фамилию');
             return false;
         }
         
-        // Проверяем, что введены как минимум два слова
         const words = value.split(' ');
         if (words.length < 2) {
-            showInputError(input, 'Пожалуйста, введите имя и фамилию');
+            showInputError(input, 'Введите имя и фамилию');
             return false;
         }
         
-        // Проверяем, что каждое слово начинается с заглавной буквы
         const nameRegex = /^[А-ЯЁ][а-яё]+\s[А-ЯЁ][а-яё]+$/;
         if (!nameRegex.test(value)) {
-            showInputError(input, 'Введите имя и фамилию с заглавной буквы (например: Иван Иванов)');
+            showInputError(input, 'Введите с заглавной буквы (например: Иван Иванов)');
             return false;
         }
         
@@ -244,23 +230,18 @@ document.addEventListener('DOMContentLoaded', function() {
         return true;
     }
     
-    // Функция показа ошибки
     function showInputError(input, message) {
-        // Удаляем существующую ошибку, если есть
         clearInputError(input);
-        
         const errorDiv = document.createElement('div');
         errorDiv.className = 'input-error';
         errorDiv.textContent = message;
         errorDiv.style.color = '#d32f2f';
         errorDiv.style.fontSize = '0.8rem';
         errorDiv.style.marginTop = '5px';
-        
         input.parentNode.appendChild(errorDiv);
         input.style.borderColor = '#d32f2f';
     }
     
-    // Функция очистки ошибки
     function clearInputError(input) {
         const existingError = input.parentNode.querySelector('.input-error');
         if (existingError) {
@@ -269,7 +250,7 @@ document.addEventListener('DOMContentLoaded', function() {
         input.style.borderColor = '';
     }
     
-    // ===== КНОПКА "НАВЕРХ" =====
+    // ===== КНОПКА НАВЕРХ =====
     function initScrollTop() {
         const scrollButton = document.getElementById('scrollTop');
         if (!scrollButton) return;
@@ -290,13 +271,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // ===== ЦВЕТОВАЯ ПАЛИТРА ДРЕСС-КОДА =====
+    // ===== ЦВЕТОВАЯ ПАЛИТРА =====
     function initColorPalette() {
         const colorSwatches = document.querySelectorAll('.color-swatch');
         if (colorSwatches.length === 0) return;
         
         colorSwatches.forEach(swatch => {
-            // Показываем RGB код при наведении
             swatch.addEventListener('mouseenter', function() {
                 const rgb = getComputedStyle(this).backgroundColor;
                 this.setAttribute('title', `Цвет: ${rgb}`);
@@ -304,7 +284,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // ===== АНИМАЦИИ ПРИ ПРОКРУТКЕ =====
+    // ===== АНИМАЦИИ =====
     function initScrollAnimations() {
         const animatedElements = document.querySelectorAll('.color-item, .location-detail, .timeline-item, .preference-card');
         
@@ -328,7 +308,6 @@ document.addEventListener('DOMContentLoaded', function() {
             observer.observe(el);
         });
         
-        // Добавляем класс для анимации
         const style = document.createElement('style');
         style.textContent = `
             .animated {
@@ -339,11 +318,10 @@ document.addEventListener('DOMContentLoaded', function() {
         document.head.appendChild(style);
     }
     
-    // ===== ОБРАБОТКА ИЗОБРАЖЕНИЙ =====
+    // ===== ИЗОБРАЖЕНИЯ =====
     function initImageLoading() {
         const images = document.querySelectorAll('img');
         
-        // Проверка загрузки фонового изображения
         const bgImage = new Image();
         bgImage.src = 'Image1.jpg';
         bgImage.onload = function() {
@@ -381,7 +359,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // ===== ОБНОВЛЕНИЕ ГОДА В ФУТЕРЕ =====
+    // ===== ФУТЕР =====
     function updateFooterYear() {
         const yearElement = document.querySelector('.footer-bottom');
         if (yearElement) {
@@ -392,7 +370,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // ===== ПАРАЛЛАКС АНИМАЦИЯ =====
+    // ===== ПАРАЛЛАКС =====
     function initParallaxLines() {
         const parallaxSections = document.querySelectorAll('.program-section, .preferences-section');
         

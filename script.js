@@ -101,72 +101,186 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // ===== ФОРМА ПОДТВЕРЖДЕНИЯ =====
-    function initForm() {
-        const form = document.getElementById('weddingForm');
-        if (!form) return;
+function initForm() {
+    const form = document.getElementById('weddingForm');
+    if (!form) return;
+    
+    const submitBtn = form.querySelector('.submit-button');
+    
+    // ЗАМЕНИТЕ ЭТОТ URL НА ВАШ ССЫЛКУ
+    const YANDEX_FORM_URL = 'https://forms.yandex.ru/u/6995c666f47e734ccb163534';
+
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
         
-        const submitBtn = form.querySelector('.submit-button');
-        
-        form.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = 'Отправка...';
-            submitBtn.disabled = true;
-            
-            try {
-                // Собрать данные формы
-                const formData = new FormData(form);
-                const data = Object.fromEntries(formData);
-                
-                // Получить выбранные напитки
-                const selectedDrinks = [];
-                form.querySelectorAll('input[name="drinks[]"]:checked').forEach(checkbox => {
-                    selectedDrinks.push(checkbox.value);
-                });
-                data.drinks = selectedDrinks;
-                
-                // Здесь должна быть реальная отправка на сервер
-                // Имитация отправки
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                
-                // Показать сообщение об успехе
-                alert('Спасибо! Ваш ответ успешно отправлен Константину и Елене!');
-                
-                // Сбросить форму
-                form.reset();
-                
-            } catch (error) {
-                console.error('Ошибка отправки:', error);
-                alert('Ошибка отправки. Попробуйте еще раз.');
-            } finally {
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
-            }
-        });
-        
-        // Валидация для имени
-        const nameInput = document.getElementById('name');
-        if (nameInput) {
-            nameInput.addEventListener('blur', function() {
-                validateName(this);
-            });
+        // Валидация имени
+        if (!validateName(document.getElementById('name'))) {
+            alert('Пожалуйста, введите имя и фамилию правильно (Иван Иванов)');
+            return;
         }
+        
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Отправка...';
+        submitBtn.disabled = true;
+        
+        try {
+            // Собираем данные
+            const formData = new FormData(form);
+            
+            // Получаем выбранные напитки
+            const selectedDrinks = [];
+            form.querySelectorAll('input[name="drinks[]"]:checked').forEach(checkbox => {
+                selectedDrinks.push(checkbox.value);
+            });
+            
+            // Подготавливаем данные для отправки
+            const data = {
+                name: formData.get('name').trim(),
+                attendance: formData.get('attendance'),
+                drinks: selectedDrinks.length > 0 ? selectedDrinks.join(', ') : 'Не указано',
+                timestamp: new Date().toISOString()
+            };
+            
+            // Проверяем обязательное поле "Присутствие"
+            if (!data.attendance) {
+                throw new Error('Пожалуйста, выберите, придете ли вы');
+            }
+            
+            console.log('Отправляемые данные:', data);
+            
+            // Отправляем в Яндекс Формы
+            const formDataToSend = new FormData();
+            formDataToSend.append('Имя и фамилия', data.name);
+            formDataToSend.append('Вы придёте?', data.attendance === 'yes' ? 'Да, с радостью!' : 'К сожалению, не смогу');
+            formDataToSend.append('Какие напитки предпочитаете?', data.drinks);
+
+            const response = await fetch(YANDEX_FORM_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: formData
+            });
+            
+            // Так как mode: 'no-cors', мы не можем получить response
+            // Но если запрос ушел - считаем успешным
+            
+            // Показываем успешное сообщение
+            showSuccessMessage(data);
+            
+            // Сбрасываем форму
+            form.reset();
+            
+        } catch (error) {
+            console.error('Ошибка отправки:', error);
+            showErrorMessage(error.message || 'Ошибка отправки формы');
+        } finally {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }
+    });
+    
+    // Валидация для имени
+    const nameInput = document.getElementById('name');
+    if (nameInput) {
+        nameInput.addEventListener('blur', function() {
+            validateName(this);
+        });
     }
     
+    // Добавляем обработчик для радио-кнопок
+    const radioButtons = form.querySelectorAll('input[name="attendance"]');
+    radioButtons.forEach(radio => {
+        radio.addEventListener('change', function() {
+            clearRadioError();
+        });
+    });
+}
+
+    // Функция показа успешного сообщения
+    function showSuccessMessage(data) {
+        const modal = document.createElement('div');
+        modal.className = 'success-modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h3>Спасибо, ${data.name.split(' ')[0]}!</h3>
+                <p>Ваш ответ успешно сохранён.</p>
+                <p>Мы будем ждать вас${data.attendance === 'yes' ? ' с нетерпением' : ' в другой раз'}!</p>
+                <button class="modal-close">Закрыть</button>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Анимация появления
+        setTimeout(() => {
+            modal.classList.add('show');
+        }, 10);
+        
+        // Закрытие
+        modal.querySelector('.modal-close').addEventListener('click', () => {
+            closeModal(modal);
+        });
+        
+        // Автозакрытие
+        setTimeout(() => {
+            if (modal.parentNode) closeModal(modal);
+        }, 5000);
+    }
+
+    function closeModal(modal) {
+        modal.classList.remove('show');
+        setTimeout(() => {
+            if (modal.parentNode) modal.remove();
+        }, 300);
+    }
+
+    function showErrorMessage(message) {
+        const modal = document.createElement('div');
+        modal.className = 'error-modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-icon">
+                    <i class="fas fa-exclamation-circle"></i>
+                </div>
+                <h3>Ошибка</h3>
+                <p>${message}</p>
+                <p>Пожалуйста, попробуйте еще раз или свяжитесь с нами напрямую.</p>
+                <button class="modal-close">Понятно</button>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        setTimeout(() => {
+            modal.classList.add('show');
+        }, 10);
+        
+        modal.querySelector('.modal-close').addEventListener('click', () => {
+            closeModal(modal);
+        });
+    }
+
+    function clearRadioError() {
+        const error = document.querySelector('.radio-error');
+        if (error) error.remove();
+    }
+
+    // Валидация имени (оставляем вашу функцию)
     function validateName(input) {
         const value = input.value.trim();
         const nameRegex = /^[А-ЯЁ][а-яё]+\s[А-ЯЁ][а-яё]+$/;
         
         if (value && !nameRegex.test(value)) {
-            showInputError(input, 'Введите имя и фамилию с заглавной буквы');
+            showInputError(input, 'Введите имя и фамилию с заглавной буквы (например: Иван Иванов)');
             return false;
         } else {
             clearInputError(input);
             return true;
         }
     }
-    
+
     function showInputError(input, message) {
         clearInputError(input);
         
@@ -180,7 +294,7 @@ document.addEventListener('DOMContentLoaded', function() {
         input.parentNode.appendChild(errorDiv);
         input.style.borderColor = '#d32f2f';
     }
-    
+
     function clearInputError(input) {
         const existingError = input.parentNode.querySelector('.input-error');
         if (existingError) {

@@ -115,30 +115,93 @@ document.addEventListener('DOMContentLoaded', function() {
             submitBtn.disabled = true;
             
             try {
-                // Собрать данные формы
-                const formData = new FormData(form);
-                const data = Object.fromEntries(formData);
+                // Получаем имя
+                const nameInput = document.getElementById('name');
+                const name = nameInput.value.trim();
                 
-                // Получить выбранные напитки
+                // Проверяем имя через функцию валидации
+                if (!validateNameInput(nameInput)) {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                    return;
+                }
+                
+                // Получаем выбранный вариант участия
+                const attendanceInput = document.querySelector('input[name="attendance"]:checked');
+                if (!attendanceInput) {
+                    alert('Пожалуйста, выберите, сможете ли вы присутствовать');
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                    return;
+                }
+                
+                // Преобразуем значения в читаемый текст
+                let attendanceText = '';
+                if (attendanceInput.value === 'yes') {
+                    attendanceText = '✅ Да, с радостью!';
+                } else if (attendanceInput.value === 'no') {
+                    attendanceText = '❌ К сожалению, не смогу';
+                }
+                
+                // Получаем выбранные напитки
                 const selectedDrinks = [];
-                form.querySelectorAll('input[name="drinks[]"]:checked').forEach(checkbox => {
-                    selectedDrinks.push(checkbox.value);
+                document.querySelectorAll('input[name="drinks[]"]:checked').forEach(checkbox => {
+                    // Преобразуем значения в читаемый текст
+                    const drinkValue = checkbox.value;
+                    if (drinkValue === 'wine') selectedDrinks.push('🍷 Вино');
+                    else if (drinkValue === 'champagne') selectedDrinks.push('🥂 Шампанское');
+                    else if (drinkValue === 'whiskey') selectedDrinks.push('🥃 Виски');
+                    else if (drinkValue === 'vodka') selectedDrinks.push('🥃 Водка');
+                    else if (drinkValue === 'juice') selectedDrinks.push('🧃 Сок');
+                    else if (drinkValue === 'water') selectedDrinks.push('💧 Вода');
                 });
-                data.drinks = selectedDrinks;
                 
-                // Здесь должна быть реальная отправка на сервер
-                // Имитация отправки
-                await new Promise(resolve => setTimeout(resolve, 1000));
+                const drinksText = selectedDrinks.length > 0 ? selectedDrinks.join(', ') : 'Не выбраны';
                 
-                // Показать сообщение об успехе
-                alert('Спасибо! Ваш ответ успешно отправлен Константину и Елене!');
+                // Формируем сообщение для Telegram
+                const message = `
+                🎉 <b>НОВЫЙ ОТВЕТ НА СВАДЬБУ!</b>
+                ━━━━━━━━━━━━━━━━
+
+                👤 <b>Имя:</b> ${name}
+
+                📌 <b>Участие:</b> ${attendanceText}
+
+                🍷 <b>Напитки:</b> ${drinksText}
+
+                ━━━━━━━━━━━━━━━━
+                📅 <b>28 июня 2026</b> | Константин & Елена
+                `;
                 
-                // Сбросить форму
-                form.reset();
+                // URL вашего Worker (ЗАМЕНИТЕ НА СВОЙ!)
+                const WORKER_URL = 'https://wedding-form-proxy.lohnes98.workers.dev/';
+
+                // Отправляем в Worker
+                const response = await fetch(WORKER_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message: message })
+                });
+                
+                const result = await response.json();
+                
+                if (result.ok) {
+                    alert('Спасибо! Ваш ответ успешно отправлен! Мы скоро подтвердим ваше участие ❤️');
+                    
+                    // Сбрасываем форму
+                    form.reset();
+                    
+                    // Очищаем ошибки валидации, если были
+                    clearInputError(nameInput);
+                } else {
+                    throw new Error('Ошибка отправки в Telegram');
+                }
                 
             } catch (error) {
                 console.error('Ошибка отправки:', error);
-                alert('Ошибка отправки. Попробуйте еще раз.');
+                alert('Извините, произошла ошибка. Пожалуйста, попробуйте еще раз или свяжитесь с нами лично.');
             } finally {
                 submitBtn.innerHTML = originalText;
                 submitBtn.disabled = false;
@@ -149,25 +212,41 @@ document.addEventListener('DOMContentLoaded', function() {
         const nameInput = document.getElementById('name');
         if (nameInput) {
             nameInput.addEventListener('blur', function() {
-                validateName(this);
+                validateNameInput(this);
             });
         }
     }
     
-    function validateName(input) {
+    // Функция валидации имени
+    function validateNameInput(input) {
         const value = input.value.trim();
-        const nameRegex = /^[А-ЯЁ][а-яё]+\s[А-ЯЁ][а-яё]+$/;
         
-        if (value && !nameRegex.test(value)) {
-            showInputError(input, 'Введите имя и фамилию с заглавной буквы');
+        if (value === '') {
+            showInputError(input, 'Пожалуйста, введите имя и фамилию');
             return false;
-        } else {
-            clearInputError(input);
-            return true;
         }
+        
+        // Проверяем, что введены как минимум два слова
+        const words = value.split(' ');
+        if (words.length < 2) {
+            showInputError(input, 'Пожалуйста, введите имя и фамилию');
+            return false;
+        }
+        
+        // Проверяем, что каждое слово начинается с заглавной буквы
+        const nameRegex = /^[А-ЯЁ][а-яё]+\s[А-ЯЁ][а-яё]+$/;
+        if (!nameRegex.test(value)) {
+            showInputError(input, 'Введите имя и фамилию с заглавной буквы (например: Иван Иванов)');
+            return false;
+        }
+        
+        clearInputError(input);
+        return true;
     }
     
+    // Функция показа ошибки
     function showInputError(input, message) {
+        // Удаляем существующую ошибку, если есть
         clearInputError(input);
         
         const errorDiv = document.createElement('div');
@@ -181,6 +260,7 @@ document.addEventListener('DOMContentLoaded', function() {
         input.style.borderColor = '#d32f2f';
     }
     
+    // Функция очистки ошибки
     function clearInputError(input) {
         const existingError = input.parentNode.querySelector('.input-error');
         if (existingError) {
@@ -226,7 +306,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // ===== АНИМАЦИИ ПРИ ПРОКРУТКЕ =====
     function initScrollAnimations() {
-        const animatedElements = document.querySelectorAll('.color-item, .location-detail, .timeline-item, .example-item, .preference-card');
+        const animatedElements = document.querySelectorAll('.color-item, .location-detail, .timeline-item, .preference-card');
         
         if (animatedElements.length === 0) return;
         
@@ -268,22 +348,18 @@ document.addEventListener('DOMContentLoaded', function() {
         bgImage.src = 'Image1.jpg';
         bgImage.onload = function() {
             console.log('Фоновое изображение успешно загружено');
-            // Можно добавить анимацию появления
             document.querySelector('.hero').classList.add('bg-loaded');
         };
         bgImage.onerror = function() {
             console.error('Ошибка загрузки фонового изображения');
-            // Резервный фон
             document.querySelector('.hero').style.background = 'var(--white)';
         };
         
         images.forEach(img => {
-            // Добавляем обработчик ошибок загрузки
             img.onerror = function() {
                 console.log(`Ошибка загрузки изображения: ${this.src}`);
                 this.style.display = 'none';
                 
-                // Создаем плейсхолдер
                 const placeholder = document.createElement('div');
                 placeholder.className = 'image-placeholder';
                 placeholder.style.width = '100%';
@@ -299,7 +375,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.parentNode.appendChild(placeholder);
             };
             
-            // Ленивая загрузка
             if ('loading' in HTMLImageElement.prototype) {
                 img.loading = 'lazy';
             }
@@ -311,7 +386,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const yearElement = document.querySelector('.footer-bottom');
         if (yearElement) {
             const currentYear = new Date().getFullYear();
-            // Добавляем год создания сайта, если его нет
             if (!yearElement.textContent.includes('2026')) {
                 yearElement.innerHTML += `<br>Создано в ${currentYear}`;
             }
@@ -319,103 +393,84 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // ===== ПАРАЛЛАКС АНИМАЦИЯ =====
-function initParallaxLines() {
-    const parallaxSections = document.querySelectorAll('.program-section, .preferences-section');
-    
-    if (parallaxSections.length === 0) return;
-    
-    // Коэффициенты параллакса для каждого слоя (чем меньше - медленнее)
-    
-    const parallaxFactors = [
-    0.05, 0.08, 0.11, 0.14, 0.17,  // Медленные
-    0.20, 0.23, 0.26, 0.29, 0.32,  // Средние
-    0.35, 0.38, 0.41, 0.44, 0.47,  // Быстрые
-    0.50, 0.53, 0.56, 0.59, 0.62,  // Очень быстрые
-    0.65, 0.68, 0.71, 0.74, 0.77,  // Экстра быстрые
-    0.80, 0.83, 0.86, 0.89, 0.92   // Супер быстрые
-];
+    function initParallaxLines() {
+        const parallaxSections = document.querySelectorAll('.program-section, .preferences-section');
+        
+        if (parallaxSections.length === 0) return;
+        
+        const parallaxFactors = [
+            0.05, 0.08, 0.11, 0.14, 0.17,
+            0.20, 0.23, 0.26, 0.29, 0.32,
+            0.35, 0.38, 0.41, 0.44, 0.47,
+            0.50, 0.53, 0.56, 0.59, 0.62,
+            0.65, 0.68, 0.71, 0.74, 0.77,
+            0.80, 0.83, 0.86, 0.89, 0.92
+        ];
 
-    // Инициализация линий
-    parallaxSections.forEach(section => {
-        const lines = section.querySelectorAll('.line');
-        lines.forEach((line, index) => {
-            // Устанавливаем начальную прозрачность
-            line.style.opacity = '0.2';
-        });
-    });
-    
-    // Обработчик скролла
-    function updateParallax() {
         parallaxSections.forEach(section => {
             const lines = section.querySelectorAll('.line');
-            const sectionRect = section.getBoundingClientRect();
-            const windowHeight = window.innerHeight;
-            const sectionHeight = section.offsetHeight;
-            
-            // Если секция в зоне видимости
-            if (sectionRect.top < windowHeight && sectionRect.bottom > 0) {
-                // Вычисляем позицию секции относительно окна (от 0 до 1)
-                const sectionTopVisible = Math.max(0, sectionRect.top);
-                const sectionBottomVisible = Math.min(windowHeight, sectionRect.bottom);
-                const visibleHeight = sectionBottomVisible - sectionTopVisible;
-                const visibilityRatio = visibleHeight / windowHeight;
+            lines.forEach((line, index) => {
+                line.style.opacity = '0.2';
+            });
+        });
+        
+        function updateParallax() {
+            parallaxSections.forEach(section => {
+                const lines = section.querySelectorAll('.line');
+                const sectionRect = section.getBoundingClientRect();
+                const windowHeight = window.innerHeight;
+                const sectionHeight = section.offsetHeight;
                 
-                // Применяем параллакс к каждой линии
-                lines.forEach((line, index) => {
-                    const factor = parallaxFactors[index % parallaxFactors.length];
-                    const scrollY = window.scrollY;
-                    const sectionOffset = section.offsetTop;
-                    const scrollProgress = (scrollY - sectionOffset + windowHeight) / (sectionHeight + windowHeight);
+                if (sectionRect.top < windowHeight && sectionRect.bottom > 0) {
+                    const sectionTopVisible = Math.max(0, sectionRect.top);
+                    const sectionBottomVisible = Math.min(windowHeight, sectionRect.bottom);
+                    const visibleHeight = sectionBottomVisible - sectionTopVisible;
+                    const visibilityRatio = visibleHeight / windowHeight;
                     
-                    // Параллакс движение
-                    const offset = scrollProgress * 100 * factor;
-                    
-                    // Разные направления движения для разных линий
-                    if (index % 4 === 0) {
-                        // Вертикальное движение
-                        line.style.transform = `rotate(${5 + offset * 0.05}deg) translateY(${offset}px)`;
-                    } else if (index % 4 === 1) {
-                        // Горизонтальное движение
-                        line.style.transform = `rotate(${-3 - offset * 0.03}deg) translateX(${offset * 0.7}px)`;
-                    } else if (index % 4 === 2) {
-                        // Диагональное движение
-                        line.style.transform = `rotate(${2 + offset * 0.04}deg) translate(${offset * 0.5}px, ${-offset * 0.3}px)`;
-                    } else {
-                        // Обратное движение
-                        line.style.transform = `rotate(${-2 - offset * 0.02}deg) translate(${-offset * 0.4}px, ${offset * 0.6}px)`;
-                    }
-                    
-                    // Изменение прозрачности в зависимости от видимости
-                    const opacity = 0.15 + (visibilityRatio * 0.25);
-                    line.style.opacity = Math.min(0.4, opacity).toString();
+                    lines.forEach((line, index) => {
+                        const factor = parallaxFactors[index % parallaxFactors.length];
+                        const scrollY = window.scrollY;
+                        const sectionOffset = section.offsetTop;
+                        const scrollProgress = (scrollY - sectionOffset + windowHeight) / (sectionHeight + windowHeight);
+                        
+                        const offset = scrollProgress * 100 * factor;
+                        
+                        if (index % 4 === 0) {
+                            line.style.transform = `rotate(${5 + offset * 0.05}deg) translateY(${offset}px)`;
+                        } else if (index % 4 === 1) {
+                            line.style.transform = `rotate(${-3 - offset * 0.03}deg) translateX(${offset * 0.7}px)`;
+                        } else if (index % 4 === 2) {
+                            line.style.transform = `rotate(${2 + offset * 0.04}deg) translate(${offset * 0.5}px, ${-offset * 0.3}px)`;
+                        } else {
+                            line.style.transform = `rotate(${-2 - offset * 0.02}deg) translate(${-offset * 0.4}px, ${offset * 0.6}px)`;
+                        }
+                        
+                        const opacity = 0.15 + (visibilityRatio * 0.25);
+                        line.style.opacity = Math.min(0.4, opacity).toString();
+                    });
+                } else {
+                    lines.forEach(line => {
+                        line.style.opacity = '0.1';
+                    });
+                }
+            });
+        }
+        
+        updateParallax();
+        
+        let ticking = false;
+        window.addEventListener('scroll', () => {
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    updateParallax();
+                    ticking = false;
                 });
-            } else {
-                // Если секция не видна, уменьшаем прозрачность
-                lines.forEach(line => {
-                    line.style.opacity = '0.1';
-                });
+                ticking = true;
             }
         });
+        
+        window.addEventListener('resize', updateParallax);
+        
+        console.log('Параллакс линии инициализированы');
     }
-    
-    // Инициализация
-    updateParallax();
-    
-    // Оптимизированный обработчик скролла с throttling
-    let ticking = false;
-    window.addEventListener('scroll', () => {
-        if (!ticking) {
-            window.requestAnimationFrame(() => {
-                updateParallax();
-                ticking = false;
-            });
-            ticking = true;
-        }
-    });
-    
-    // Обработчик ресайза
-    window.addEventListener('resize', updateParallax);
-    
-    console.log('Параллакс линии инициализированы');
-}
 });

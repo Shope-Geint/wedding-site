@@ -326,7 +326,7 @@ body {
     font-weight: 700;
     color: var(--black);
     text-align: center;
-    margin-bottom: 60px;
+    margin-bottom: 10px;
     text-transform: uppercase;
     position: relative;
     padding-bottom: 20px;
@@ -705,14 +705,14 @@ body {
 
 /* 1. Заголовок по центру */
 .location-header {
-    margin-bottom: 40px;
+    margin-bottom: 10px;
     text-align: center;
 }
 
 .location-main-info {
     display: flex;
     flex-direction: column;
-    gap: 25px;
+    gap: 5px;
 }
 
 .location-name {
@@ -732,7 +732,7 @@ body {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 30px;
-    margin-top: 40px;
+    margin-top: 20px;
 }
 
 .location-detail {
@@ -847,7 +847,7 @@ body {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 50px;
-    margin-top: 40px;
+    margin-top: 10px;
     align-items: start;
 }
 

@@ -2036,3 +2036,181 @@ body {
         font-size: 2.8rem;
     }
 }
+
+/* ===== БЛОК БЛАГОДАРНОСТИ ===== */
+.thankyou-block {
+    max-width: 500px;
+    margin: 0 auto;
+    animation: fadeInUp 0.5s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.thankyou-content {
+    background: var(--white);
+    padding: 40px;
+    border: 2px solid var(--black); /* Как у формы */
+    text-align: center;
+    box-shadow: none; /* Убираем лишние тени */
+}
+
+.thankyou-icon {
+    margin-bottom: 25px;
+}
+
+.thankyou-icon i {
+    font-size: 4rem;
+    color: var(--black); /* Чёрная иконка, как акцент */
+    animation: pop 0.4s ease;
+}
+
+@keyframes pop {
+    0% { transform: scale(0.8); opacity: 0; }
+    80% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.thankyou-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--black);
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.thankyou-subtitle {
+    color: var(--gray-dark);
+    font-size: 1rem;
+    margin-bottom: 25px;
+    font-weight: 300;
+    border-bottom: 2px solid var(--black); /* Как у формы */
+    padding-bottom: 15px;
+}
+
+.thankyou-details {
+    background: transparent; /* Убираем серый фон */
+    padding: 0;
+    margin-bottom: 25px;
+    border: none; /* Убираем границы */
+    text-align: left;
+}
+
+.thankyou-detail-row {
+    display: flex;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--light);
+}
+
+.thankyou-detail-row:last-child {
+    border-bottom: none;
+}
+
+.thankyou-detail-label {
+    flex: 0 0 90px;
+    font-weight: 500;
+    color: var(--black);
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+}
+
+.thankyou-detail-value {
+    flex: 1;
+    color: var(--black);
+    font-size: 1rem;
+    font-weight: 400;
+}
+
+.thankyou-detail-value.yes {
+    color: var(--black);
+    font-weight: 500;
+}
+
+.thankyou-detail-value.yes::before {
+    content: "✓ ";
+    font-weight: 700;
+}
+
+.thankyou-detail-value.no {
+    color: var(--black);
+    font-weight: 500;
+}
+
+.thankyou-detail-value.no::before {
+    content: "✗ ";
+    font-weight: 700;
+}
+
+.thankyou-drinks-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.thankyou-drink-tag {
+    background: transparent;
+    border: 1px solid var(--black);
+    color: var(--black);
+    padding: 4px 12px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.thankyou-note {
+    text-align: center;
+    color: var(--black);
+    font-size: 0.9rem;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 2px solid var(--black);
+    font-style: italic;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .thankyou-content {
+        padding: 30px 20px;
+    }
+    
+    .thankyou-title {
+        font-size: 1.6rem;
+    }
+    
+    .thankyou-icon i {
+        font-size: 3.5rem;
+    }
+    
+    .thankyou-detail-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+    
+    .thankyou-detail-label {
+        flex: none;
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .thankyou-content {
+        padding: 25px 15px;
+    }
+    
+    .thankyou-title {
+        font-size: 1.4rem;
+    }
+}

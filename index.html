@@ -361,13 +361,12 @@
         <div class="container">
             <h2 class="section-title">Подтвердите участие</h2>
             <!-- ФРАЗА ПО ЦЕНТРУ -->
-            <p class="section-subtitle">Пожалуйста, ответьте до 1 марта 2026 года</p>
+            <p class="section-subtitle">Пожалуйста, ответьте до 1 мая 2026 года</p>
             
             <form class="rsvp-form" id="weddingForm">
                 <div class="form-group">
                     <label for="name" class="form-label">Имя и фамилия *</label>
                     <input type="text" id="name" name="name" class="form-input" required placeholder="Иван Иванов">
-                    <input type="hidden" name="secret_key" value="valerachiter228">
                 </div>
                 
                 <div class="form-group">
@@ -419,10 +418,30 @@
                     </div>
                 </div>
                 
+                <input type="hidden" name="secret_key" value="valerachiter228">
+
                 <button type="submit" class="submit-button">
                     Отправить ответ
                 </button>
             </form>
+
+             <!-- 👇 БЛОК БЛАГОДАРНОСТИ (изначально скрыт) -->
+            <div class="thankyou-block" id="thankyouBlock" style="display: none;">
+                <div class="thankyou-content">
+                    <div class="thankyou-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h3 class="thankyou-title">Спасибо за ответ! 💌</h3>
+                    <p class="thankyou-subtitle">Мы получили ваше подтверждение</p>
+                    
+                    <div class="thankyou-details" id="thankyouDetails">
+                        <!-- Сюда подставятся данные -->
+                    </div>
+                    
+                    <p class="thankyou-note">До встречи 28 июня 2026! 🎉</p>
+                </div>
+            </div>
+
         </div>
     </section>
 

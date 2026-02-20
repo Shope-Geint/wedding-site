@@ -101,81 +101,136 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // ===== ФОРМА ПОДТВЕРЖДЕНИЯ =====
-        function initForm() {
-        const form = document.getElementById('weddingForm');
-        if (!form) return;
+       function initForm() {
+            const form = document.getElementById('weddingForm');
+            if (!form) return;
 
-        const submitBtn = form.querySelector('.submit-button');
-        
-        // ⚠️ ЭТО ВАША РАБОЧАЯ ССЫЛКА
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyPxycyZMgYdJMX6I8RgY6eR-lxry0-SZP5kPLwQzzgMOECS1CpckrQ7eJhHIthN_mFrA/exec';
+            const submitBtn = form.querySelector('.submit-button');
+            const thankyouBlock = document.getElementById('thankyouBlock');
+            const thankyouDetails = document.getElementById('thankyouDetails');
+            
+            // ⚠️ ЭТО ВАША РАБОЧАЯ ССЫЛКА
+            const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyPxycyZMgYdJMX6I8RgY6eR-lxry0-SZP5kPLwQzzgMOECS1CpckrQ7eJhHIthN_mFrA/exec';
 
-        form.addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-            // Простая проверка имени
-            const nameInput = document.getElementById('name');
-            if (!nameInput.value.trim()) {
-                alert('Пожалуйста, введите имя');
-                return;
+            // Функция для отображения блока благодарности
+            function showThankYou(formData) {
+                // Определяем текст для участия (без иконок, только текст)
+                let attendanceHtml = '';
+                if (formData.attendance === 'yes') {
+                    attendanceHtml = '<span class="thankyou-detail-value yes">Да, с радостью</span>';
+                } else {
+                    attendanceHtml = '<span class="thankyou-detail-value no">К сожалению, не смогу</span>';
+                }
+                
+                // Форматируем напитки (только текст, без эмодзи)
+                let drinksHtml = '';
+                if (formData.drinks && formData.drinks.length > 0) {
+                    const drinkLabels = {
+                        'wine': 'Вино',
+                        'champagne': 'Шампанское',
+                        'whiskey': 'Виски',
+                        'vodka': 'Водка',
+                        'juice': 'Сок',
+                        'water': 'Вода'
+                    };
+                    
+                    let drinksList = '<div class="thankyou-drinks-list">';
+                    formData.drinks.forEach(drink => {
+                        const label = drinkLabels[drink] || drink;
+                        drinksList += `<span class="thankyou-drink-tag">${label}</span>`;
+                    });
+                    drinksList += '</div>';
+                    drinksHtml = drinksList;
+                } else {
+                    drinksHtml = '<span class="thankyou-detail-value">—</span>';
+                }
+                
+                // Формируем HTML с деталями
+                thankyouDetails.innerHTML = `
+                    <div class="thankyou-detail-row">
+                        <span class="thankyou-detail-label">Имя</span>
+                        <span class="thankyou-detail-value">${formData.name}</span>
+                    </div>
+                    <div class="thankyou-detail-row">
+                        <span class="thankyou-detail-label">Участие</span>
+                        ${attendanceHtml}
+                    </div>
+                    <div class="thankyou-detail-row">
+                        <span class="thankyou-detail-label">Напитки</span>
+                        <div class="thankyou-detail-value">${drinksHtml}</div>
+                    </div>
+                `;
+                
+                // Прячем форму и показываем блок благодарности
+                form.style.display = 'none';
+                thankyouBlock.style.display = 'block';
+                
+                // Плавная прокрутка
+                setTimeout(() => {
+                    thankyouBlock.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 100);
             }
 
-            // Проверка, выбрано ли участие
-            const attendance = document.querySelector('input[name="attendance"]:checked')?.value;
-            if (!attendance) {
-                alert('Пожалуйста, укажите, сможете ли вы прийти');
-                return;
-            }
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
 
-            // Собираем напитки
-            const drinks = [];
-            document.querySelectorAll('input[name="drinks[]"]:checked').forEach(cb => {
-                drinks.push(cb.value);
-            });
+                // Проверка имени
+                const nameInput = document.getElementById('name');
+                if (!nameInput.value.trim()) {
+                    alert('Пожалуйста, введите имя');
+                    return;
+                }
 
-            // Меняем кнопку
-            const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = 'Отправка...';
-            submitBtn.disabled = true;
+                // Проверка участия
+                const attendance = document.querySelector('input[name="attendance"]:checked')?.value;
+                if (!attendance) {
+                    alert('Пожалуйста, укажите, сможете ли вы прийти');
+                    return;
+                }
 
-            try {
-                // Отправляем данные
-                const response = await fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors', // Критически важно для Google Scripts!
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        name: nameInput.value,
-                        attendance: attendance,
-                        drinks: drinks,
-                        secret_key: 'valerachiter228'
-                    })
+                // Собираем напитки
+                const drinks = [];
+                document.querySelectorAll('input[name="drinks[]"]:checked').forEach(cb => {
+                    drinks.push(cb.value);
                 });
 
-                // Из-за no-cors мы не видим ответ, но запрос ушёл
-                console.log('Запрос отправлен в Google Sheets');
-                
-                // Показываем успех
-                alert('Спасибо! Ваш ответ отправлен!');
-                form.reset();
-                
-                // Визуальный фидбек
-                submitBtn.innerHTML = 'Отправлено! ✅';
-                setTimeout(() => {
-                    submitBtn.innerHTML = originalText;
-                }, 3000);
+                // Сохраняем данные
+                const formData = {
+                    name: nameInput.value.trim(),
+                    attendance: attendance,
+                    drinks: drinks
+                };
 
-            } catch (error) {
-                console.error('Ошибка:', error);
-                alert('Ошибка отправки. Попробуйте ещё раз.');
-                submitBtn.innerHTML = originalText;
-            } finally {
-                submitBtn.disabled = false;
-            }
-        });
-    }
+                // Меняем кнопку
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = 'Отправка...';
+                submitBtn.disabled = true;
+
+                try {
+                    // Отправляем данные
+                    await fetch(GOOGLE_SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            ...formData,
+                            secret_key: 'valerachiter228'
+                        })
+                    });
+
+                    // Показываем блок благодарности с данными
+                    showThankYou(formData);
+
+                } catch (error) {
+                    console.error('Ошибка:', error);
+                    alert('Ошибка отправки. Попробуйте ещё раз.');
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }
+            });
+        }
     
     function validateName(input) {
         const value = input.value.trim();

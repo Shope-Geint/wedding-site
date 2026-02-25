@@ -2214,3 +2214,16 @@ body {
         font-size: 1.4rem;
     }
 }
+
+/* Добавь в конец файла style.css */
+
+/* Для красивого отображения фото */
+.static-map-image {
+    object-fit: cover;  /* Чтобы фото красиво заполняло контейнер */
+    object-position: center;  /* Центрируем содержимое */
+    transition: transform 0.3s ease;
+}
+
+.static-map-link:hover .static-map-image {
+    transform: scale(1.02);  /* Легкое увеличение при наведении */
+}

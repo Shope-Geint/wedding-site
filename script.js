@@ -38,10 +38,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const timeDifference = CONFIG.WEDDING_DATE - now;
             
             if (timeDifference <= 0) {
-                daysElement.textContent = '000';
-                hoursElement.textContent = '00';
-                minutesElement.textContent = '00';
-                secondsElement.textContent = '00';
+                daysElement.textContent = '0';
+                hoursElement.textContent = '0';
+                minutesElement.textContent = '0';
+                secondsElement.textContent = '0';
                 return;
             }
             
@@ -50,10 +50,35 @@ document.addEventListener('DOMContentLoaded', function() {
             const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
             
-            daysElement.textContent = days.toString().padStart(3, '0');
-            hoursElement.textContent = hours.toString().padStart(2, '0');
-            minutesElement.textContent = minutes.toString().padStart(2, '0');
-            secondsElement.textContent = seconds.toString().padStart(2, '0');
+            // Дни
+            if (days >= 100) {
+                daysElement.textContent = days.toString().padStart(3, '0');
+            } else if (days >= 10) {
+                daysElement.textContent = days.toString().padStart(2, '0');
+            } else {
+                daysElement.textContent = days.toString();
+            }
+            
+            // Часы
+            if (hours >= 10) {
+                hoursElement.textContent = hours.toString().padStart(2, '0');
+            } else {
+                hoursElement.textContent = hours.toString();
+            }
+            
+            // Минуты
+            if (minutes >= 10) {
+                minutesElement.textContent = minutes.toString().padStart(2, '0');
+            } else {
+                minutesElement.textContent = minutes.toString();
+            }
+            
+            // Секунды
+            if (seconds >= 10) {
+                secondsElement.textContent = seconds.toString().padStart(2, '0');
+            } else {
+                secondsElement.textContent = seconds.toString();
+            }
         }
         
         updateCountdown();
@@ -102,12 +127,44 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // ===== ФОРМА ПОДТВЕРЖДЕНИЯ =====
        function initForm() {
-            const form = document.getElementById('weddingForm');
+        const form = document.getElementById('weddingForm');
             if (!form) return;
 
             const submitBtn = form.querySelector('.submit-button');
             const thankyouBlock = document.getElementById('thankyouBlock');
             const thankyouDetails = document.getElementById('thankyouDetails');
+            const formSubtitle = document.getElementById('formSubtitle');
+            
+            // Дата дедлайна: 20 мая 2026, 23:59:59
+            const DEADLINE_DATE = new Date(2026, 4, 20, 23, 59, 59);
+            const now = new Date();
+            
+            // Проверяем, не прошёл ли дедлайн
+            if (now > DEADLINE_DATE) {
+                // Скрываем форму
+                form.style.display = 'none';
+                // Меняем подзаголовок
+                if (formSubtitle) {
+                    formSubtitle.textContent = 'Сбор подтверждений завершён 20 мая 2026 года';
+                }
+                // Показываем сообщение
+                const closedMessage = document.createElement('div');
+                closedMessage.className = 'thankyou-block';
+                closedMessage.innerHTML = `
+                    <div class="thankyou-content">
+                        <div class="thankyou-icon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <h3 class="thankyou-title">Сбор данных завершён</h3>
+                        <p class="thankyou-subtitle">Все подтверждения уже собраны</p>
+                        <p class="thankyou-note">
+                            Если вам необходимо внести изменения, пожалуйста, свяжитесь напрямую с Константином или Еленой.
+                        </p>
+                    </div>
+                `;
+                form.parentNode.insertBefore(closedMessage, form.nextSibling);
+                return;
+            }
             
             // ⚠️ ЭТО ВАША РАБОЧАЯ ССЫЛКА
             const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyPxycyZMgYdJMX6I8RgY6eR-lxry0-SZP5kPLwQzzgMOECS1CpckrQ7eJhHIthN_mFrA/exec';
@@ -126,8 +183,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 let drinksHtml = '';
                 if (formData.drinks && formData.drinks.length > 0) {
                     const drinkLabels = {
-                        'wine': 'Вино',
+                        'white_wine': 'Вино белое',
+                        'red_wine': 'Вино красное',
                         'champagne': 'Шампанское',
+                        'cognac': 'Коньяк',
                         'whiskey': 'Виски',
                         'vodka': 'Водка',
                         'juice': 'Сок',
